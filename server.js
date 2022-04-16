@@ -10,6 +10,17 @@ server.listen(3000);
 
 app.use(express.static(path.join(__dirname, 'public'))); // vai ler a pasta public
 
+let connectionUsers = [];
+
+
 io.on('connection', (socket)=>{
-    console.log("connection");
+    console.log("loading");
+
+    socket.on('join-request', (username)=>{
+        socket.username = username;
+        connectionUsers.push(username);
+
+        console.log("connect");
+        
+    });
 });
