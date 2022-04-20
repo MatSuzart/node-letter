@@ -30,9 +30,15 @@ function addMessage(type,user,msg){
             ul.innerHTML +='<li class="m-status"></li>';
         break;
         case 'msg':
-            ul.innerHTML +='<li class="m-status"><span>'+user+'</span></li>';
+            if(username == user){
+                ul.innerHTML +='<li class="m-status"><span class="me">'+user+'</span></li>';
+            }else {
+                ul.innerHTML +='<li class="m-status"><span>'+user+'</span></li>';
+            }
         break;    
     }
+
+    ul.scrollTop = ul.scrollHeight;
 }
 
 loginInput.addEventListener('keyup', (e)=>{
@@ -88,4 +94,22 @@ socket.on('list-update', (data)=>{
 
 socket.on('show-msg', (data)=> {
     addMessage('msg', data.username, data.message);
+});
+
+socket.on('disconnect',()=>{
+    addMessage('status', null, 'VOCÊ FOI DESCONECTADO');
+    userList = [];
+    renderUserList();
+});
+
+socket.on('reconnect_error', ()=> {
+    addMessage('status', null, 'TENTANDO RECONECTAR');
+});
+
+socket.on('reconnect',()=>{
+    addMessage('status', null, 'RECONECTADO');
+
+    if(username != ''){
+    socket.emit('join-request', username);
+    }
 });
